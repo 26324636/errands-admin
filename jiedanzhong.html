@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>用户</title>
+		<link rel="stylesheet" type="text/css" href="css/style.css" />
+		<link rel="stylesheet" type="text/css" href="css/iconfont.css" />
+		<style type="text/css">
+			* {
+				margin: 0px;
+				padding: 0px;
+			}
+			
+			body {
+				background: url(img/body.jpg);
+				font: normal 13px/22px Arial, Helvetica, sans-serif;
+				color: #505050;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div id="user">
+			<div class="location">
+				<span class="iconfont icon-home loc-left">当前位置：订单 > 接单中</span>
+			</div>
+			<div class="container">
+				<div class="option">
+					<strong class="fl">共<b id="count"></b>1份订单</strong>
+				</div>
+				<form name="cmsform" id="cmsform" method="post" action="?options=batch">
+					<table width="100%" class="item" id="table">
+						<tbody>
+							<tr class="title">
+								<td width="10%" align="center" valign="middle"><input type="checkbox" name="checkAll" id="checkAll" title="全选"></td>
+								<td width="5%" align="center">订单编号</td>
+								<td width="10%">发单者</td>
+								<td width="10%">接单者</td>
+								<td width="10%">时间</td>
+								<td width="10%">物品</td>
+								<td width="10%">起始地</td>
+								<td width="10%">目的地</td>
+								<td width="5%">金额</td>
+								<td width="10%">接单要求</td>
+								<td width="20%" align="center">操作</td>
+							</tr>
+							<tr>
+								<td align="center" valign="middle"><input type="checkbox" name="ids[]" value="209"></td>
+								<td>201804120001</td>
+								<td>会飞的鱼</td>
+								<td>Effort</td>
+								<td>2018-3-24</td>
+								<td>快递</td>
+								<td>元培6幢教学楼</td>
+								<td>元培北区11幢宿舍</td>
+								<td>5</td>
+								<td>1小时送达</td>
+								
+								<td><a style="color: #136baf;">编辑</a> <a style="color:red;" class="del" iid=' + json[a].id + '> 删除</a></td>
+							</tr>
+							
+							
+						</tbody>
+					</table>
+					<table width="100%" class="item">
+						<tbody>
+
+							<tr class="footer">
+								<td colspan="5" align="right" id="cms-paging">
+									<a href="javascript:void(0)" class="page-first">首页</a>
+									<a href="javascript:void(0)">上页</a>
+									<a class="now_page">1</a>
+									<a href="/system/user.php?p=2">下页</a>
+									<a href="/system/user.php?p=9">末页</a>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</form>
+			</div>
+		</div>
+		<script type="text/javascript" src="js/jquery.js"></script>
+		<script>
+			var t = document.getElementById('table');
+			var count = document.getElementById('count');
+			//			alert(article_list);
+			//			article_list.innerHTML='';
+			//			alert(count.innerHTML);
+			$.ajax({
+				type: "get",
+				url: "http://101.200.58.92/shiyan/index.php/Web/user_count",
+				data: {},
+				async: true,
+				success: function(data) {
+					json = JSON.parse(data);
+					count.innerHTML = json;
+				}
+			});
+			$.ajax({
+				type: "get",
+				url: "http://101.200.58.92/shiyan/index.php/Web/user_show",
+				data: {},
+				async: true,
+				success: function(data) {
+					json = JSON.parse(data);
+					for(a in json) {
+						if(json[a].id != '') {
+							var r = t.insertRow();
+						}
+						var c = r.insertCell();
+						c.innerHTML = '<td align="center" valign="middle"><input type="checkbox" name="ids[]" value="209"></td>';
+						var c = r.insertCell();
+						c.innerHTML = json[a].id;
+						var c = r.insertCell();
+						c.innerHTML = json[a].name;
+						var c = r.insertCell();
+						c.innerHTML = json[a].sex;
+						var c = r.insertCell();
+						c.innerHTML = json[a].text;
+						var c = r.insertCell();
+						c.innerHTML = json[a].phone;
+						var c = r.insertCell();
+						c.innerHTML = json[a].imgurl;
+						var c = r.insertCell();
+						c.innerHTML = '<a style="color: #136baf;">编辑</a> <a style="color:red;" class="del" iid=' + json[a].id + '> 删除</a>';
+					}
+					del_event();
+					//					alert(1);
+				}
+			});
+
+			function del_event() {
+				var del = document.getElementsByClassName('del');
+				//			    alert(del.length);
+
+				for(var i = 0; i < del.length; i++) {
+					del[i].addEventListener('click', function() {
+						var judge = confirm("确定将此记录删除?");
+						var id = this.getAttribute("iid");
+
+						if(judge == true) {
+							$.ajax({
+								type: "get",
+								url: "http://101.200.58.92/shiyan/index.php/Web/user_delete",
+								data: {
+									iid_data: id
+								},
+								async: true,
+								success: function(data) {
+									json = JSON.parse(data);
+									if(json == 1) {
+										alert("删除成功");
+									} else {
+										alert("删除失败");
+									}
+									window.location.reload();
+								}
+							});
+						}
+					});
+				}
+			}
+		</script>
+	</body>
+
+</html>
